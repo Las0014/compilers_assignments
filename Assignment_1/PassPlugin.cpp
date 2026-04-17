@@ -22,7 +22,6 @@
 
 using namespace llvm;
 
-// ── Plugin entry point ────────────────────────────────────────────────────────
 
 extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
 llvmGetPassPluginInfo() {
@@ -65,16 +64,5 @@ llvmGetPassPluginInfo() {
                     }
                     return false;
                 });
-
-            // ── Optional: inject into the standard optimisation pipelines ──
-            // Uncomment if you want the passes to run automatically when
-            // -O1 / -O2 / -O3 is used after loading the plugin.
-            //
-            // PB.registerVectorizerStartEPCallback(
-            //     [](FunctionPassManager &FPM, OptimizationLevel) {
-            //         FPM.addPass(AlgebraicIdentityPass());
-            //         FPM.addPass(StrengthReductionPass());
-            //         FPM.addPass(MultiInstructionOptPass());
-            //     });
         }};
 }

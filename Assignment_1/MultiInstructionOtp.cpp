@@ -36,17 +36,12 @@
 
 using namespace llvm;
 
-// ── Data structures ───────────────────────────────────────────────────────────
-
 struct DefInfo {
-    Value          *Src;     ///< original operand (%b)
-    const ConstantInt *C;    ///< constant used  (1, 7, …)
-    unsigned        Opcode;  ///< Instruction::Add or Instruction::Sub
+    Value          *Src;     
+    const ConstantInt *C;    
+    unsigned        Opcode;  
 };
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-/// Return the opcode of the inverse operation, or 0 if unknown.
 static unsigned inverseOpcode(unsigned Op) {
     switch (Op) {
     case Instruction::Add:  return Instruction::Sub;
@@ -54,8 +49,6 @@ static unsigned inverseOpcode(unsigned Op) {
     default:                return 0;
     }
 }
-
-// ── Pass implementation ────────────────────────────────────────────────────────
 
 PreservedAnalyses MultiInstructionOptPass::run(Function &F,
                                                 FunctionAnalysisManager &) {
@@ -80,13 +73,11 @@ PreservedAnalyses MultiInstructionOptPass::run(Function &F,
             Value *RHS    = BinOp->getOperand(1);
             unsigned Op   = BinOp->getOpcode();
 
-            // ── Try to fold with a previously recorded definition ─────────
-            //
             // We look for:   current = LHS  inverse_op  C
             // where LHS was:  LHS    = Src  op          C
             // => current  is equivalent to Src.
             //
-            // The constant is always the *second* operand (canonical form).
+            // The constant is always the second operand.
 
             auto It = Defs.find(LHS);
             if (It != Defs.end()) {
@@ -101,7 +92,7 @@ PreservedAnalyses MultiInstructionOptPass::run(Function &F,
                     BinOp->replaceAllUsesWith(D.Src);
                     ToErase.push_back(BinOp);
                     Changed = true;
-                    continue; // don't record this (now dead) instruction
+                    continue; 
                 }
             }
 
